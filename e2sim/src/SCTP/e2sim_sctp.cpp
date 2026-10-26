@@ -136,7 +136,7 @@ int sctp_start_client(const char *server_ip_str, const int server_port, const in
     exit(EXIT_FAILURE);
   }
 
-  if((client_fd = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP)) == -1)
+  if((client_fd = socket(server_addr->sa_family, SOCK_STREAM, IPPROTO_SCTP)) == -1)
   {
      LOG_E("Socket creation, error message: %s", strerror(errno));
      exit(EXIT_FAILURE);

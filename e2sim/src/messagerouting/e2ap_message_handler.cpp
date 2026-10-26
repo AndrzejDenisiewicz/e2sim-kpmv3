@@ -368,7 +368,8 @@ void e2ap_handle_RICControlRequest(E2AP_PDU_t *pdu, int &socket_fd, E2Sim *e2sim
 
               SmCallback cb;
 
-            LOG_I("****** e2ap_handle_RICControlRequest ******");
+            LOG_I("****** e2ap_handle_RICControlRequest: requestor=%u instance=%u ranFunction=%u ******",
+                  reqRequestorId, reqInstanceId, ranFuncionId);
 
             bool func_exists = true;
             try {
@@ -380,11 +381,12 @@ void e2ap_handle_RICControlRequest(E2AP_PDU_t *pdu, int &socket_fd, E2Sim *e2sim
             }
 
             if (func_exists) {
+                LOG_I("RIC control callback lookup succeeded for ranFunction=%u", ranFuncionId);
                 LOG_D("Calling callback function");
                 cb(pdu);
                 LOG_D("*** DONE Calling callback function ****");
             } else {
-                LOG_E("Error: No RAN Function with this ID exists");
+                LOG_E("Error: No RAN Function with ID %u exists", ranFuncionId);
             }
 
         //   NS_LOG_DEBUG ("RAN Function ID " << ranFuncionId);
