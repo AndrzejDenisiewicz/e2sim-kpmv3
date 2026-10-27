@@ -160,19 +160,32 @@ int sctp_start_client(const char *server_ip_str, const int server_port, const in
   }
 
   if (setsockopt(client_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval) != 0) {
-    LOG_E("setsockopt addr, error message: %s", strerror(errno));
-    exit(EXIT_FAILURE);
+      LOG_E("setsockopt addr, error message: %s", strerror(errno));
+      exit(EXIT_FAILURE);
   }
 
+  LOG_I("[SCTP] Binding client socket with source port %d", client_port);
+  if (server_addr->sa_family == AF_INET) {
+    struct sockaddr_in client4_addr {};
+    client4_addr.sin_family = AF_INET;
+    client4_addr.sin_port   = htons(client_port);
+    client4_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    if(bind(client_fd,(struct sockaddr*) &client4_addr,sizeof(client4_addr)) == -1) {
+      LOG_E("bind");
+      exit(EXIT_FAILURE);
+    }
+  }
+  else {
     struct sockaddr_in6  client6_addr {};
     client6_addr.sin6_family = AF_INET6;
     client6_addr.sin6_port   = htons(client_port);
     client6_addr.sin6_addr   = in6addr_any;
 
-  LOG_I("[SCTP] Binding client socket with source port %d", client_port);
-  if(bind(client_fd,(struct sockaddr*) &client6_addr,sizeof(client6_addr)) == -1) {
-    LOG_E("bind");
-    exit(EXIT_FAILURE);
+    if(bind(client_fd,(struct sockaddr*) &client6_addr,sizeof(client6_addr)) == -1) {
+      LOG_E("bind");
+      exit(EXIT_FAILURE);
+    }
   }
   // end binding ---------------------
 
